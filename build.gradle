@@ -22,13 +22,12 @@ android {
 }
 
 repositories {
-    maven {
-        url "https://dl.bintray.com/ironsource-mobile/android-sdk"
-    }
+    maven { url "https://dl.bintray.com/ironsource-mobile/android-sdk" }
 
     flatDir {
         dirs 'libs'
     }
+    google()
 }
 
 dependencies {
@@ -42,6 +41,9 @@ dependencies {
 
     implementation 'com.ironsource.sdk:mediationsdk:6.17.0'
 
+    implementation 'com.ironsource.adapters:admobadapter:4.3.11'
+
+    implementation 'com.google.android.gms:play-services-ads:19.3.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
-    implementation 'com.google.android.gms:play-services-basement:17.1.1'
+    implementation 'com.google.android.gms:play-services-basement:17.3.0'
 }

@@ -6,11 +6,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.ironsource.mediationsdk.ISBannerSize;
 import com.ironsource.mediationsdk.IronSource;
 import com.ironsource.mediationsdk.IronSourceBannerLayout;
+import com.ironsource.mediationsdk.integration.IntegrationHelper;
 import com.ironsource.mediationsdk.logger.IronSourceError;
 import com.ironsource.mediationsdk.model.Placement;
 import com.ironsource.mediationsdk.sdk.BannerListener;
@@ -62,8 +64,10 @@ public class IronSourceService {
         IronSource.init(mActivity, appKey, IronSource.AD_UNIT.INTERSTITIAL, IronSource.AD_UNIT.REWARDED_VIDEO, IronSource.AD_UNIT.BANNER);
         //网络连接状态
         IronSource.shouldTrackNetworkState(mActivity, true);
-        initBanner();
+        //成功验证集成后，请记住从代码中删除集成帮助器。
+        //IntegrationHelper.validateIntegration(mActivity);
 
+        initBanner();
 
         setRewardedVideoListener();
         setInterstitialListener();
@@ -71,22 +75,31 @@ public class IronSourceService {
         loadInterstitial();
     }
 
-
     private void initBanner(){
         isShowBanner = new int[2];
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-        @SuppressLint("WrongViewCast") LinearLayout fragment = (LinearLayout) mActivity.findViewById(R.id.banner_container);
+        //@SuppressLint("WrongViewCast") LinearLayout fragment = (LinearLayout) mActivity.findViewById(R.id.banner_container);
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mViewRoot = inflater.inflate(R.layout.banner_ad, fragment, false);
+        mViewRoot = inflater.inflate(R.layout.banner_ad, null, false);
         mActivity.addContentView(mViewRoot, params);
     }
 
     private void loadBottomAd(){
         isShowBanner[0] = 1;
-        mBannerBottom = IronSource.createBanner(mActivity, ISBannerSize.LARGE);
+        mBannerBottom = IronSource.createBanner(mActivity, ISBannerSize.BANNER);
         final FrameLayout bannerContainer = mViewRoot.findViewById(R.id.banner_container);
+//        bannerContainer.addView(mBannerBottom);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+
+//        ImageView imageView = new ImageView(mActivity);
+//        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//        imageView.setImageResource(R.drawable.app_banner);
+
+//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams( FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+//        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         bannerContainer.addView(mBannerBottom);
         mBannerBottom.setVisibility(View.GONE);
         mBannerBottom.setBannerListener(new BannerListener() {
@@ -104,7 +117,7 @@ public class IronSourceService {
                     @Override
                     public void run() {
                         isShowBanner[0] = 2;
-                        bannerContainer.removeAllViews();
+//                        bannerContainer.removeAllViews();
                     }
                 });
             }
@@ -141,7 +154,11 @@ public class IronSourceService {
 //                FrameLayout.LayoutParams.WRAP_CONTENT);
         //bannerContainer.addView(banner, 0, layoutParams);
 
-        bannerTopContainer.addView(mBannerTop);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+        bannerTopContainer.addView(mBannerTop, 0, layoutParams);
+
+
         mBannerTop.setVisibility(View.GONE);
 
         mBannerTop.setBannerListener(new BannerListener() {
@@ -267,6 +284,7 @@ public class IronSourceService {
              */
             @Override
             public void onRewardedVideoAdShowFailed(IronSourceError error) {
+                GMDebug.LogE(error.getErrorMessage());
             }
 
             @Override
@@ -382,6 +400,8 @@ public class IronSourceService {
      * 关闭广告
      * @param type
      */
-    public void closeAd(final int type) {}
+    public void closeAd(final int type) {
+        GMDebug.LogD("closeAd" + type);
+    }
 
 }
